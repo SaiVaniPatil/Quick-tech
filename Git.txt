@@ -1,0 +1,430 @@
+Git :
+
+1.Allows you to track files in code repository
+2. Git tracks changes
+3. Git has own file structure and every file has hash value : key is hash and value is content
+
+
+commands :
+1. To create file touch file.txt
+2. To create directory mkdir dirname
+3. git init initialize empty repository : see that a hidden .git folder is created in folder
+4. To check all files use ls -la  (list file details ls -l) (list hidden files ls -a)
+5. pwd - present working directory
+6. start . (or) explorer . - to open current folder in explorer
+
+
+File Management :
+
+touch - create new file
+> - write to the file
+>> - append to the file
+cat - List contents of file
+clear - clear terminal
+Tab - autocomplete command
+echo - print to terminal
+man - help on specific command ex: man clear
+
+
+git commands :
+
+git init - created new empty repository in the directory we want
+
+
+contents of .git folder :
+
+config file :
+
+to view go into hidden git folder cd .git
+cat config : contains default config settings
+
+ cat description
+Unnamed repository; edit this file 'description' to name the repository. ( default data)
+
+$ cat HEAD
+ref: refs/heads/main
+
+object types in Git :
+
+Blob : used to store files , any file of any type (stores contents,type and size of file)
+Tree  : stores information of directories
+Commit : stores versions of project
+Annotated Tag : persistent text pointer to specific commit
+
+
+1. git hash-object : to create new objects (blob files)
+ex : echo Hello. Git | git hash-object --stdin
+
+
+for files :
+
+git hash-object <filename> -w
+
+
+git hash-object "Hello. World" = echo "blob 11\0Hello. Git"| shasum
+
+git hash is applied on object type+object length+\0(escape character/delimiter)+file contents
+
+
+
+
+file are converted to hash codes irrespective of content length :
+
+first two letters are directory, remaining for filename => foldername+filename = string/file
+
+different hash functions :
+
+MD5 - 128 bits long :
+
+SHA1 - 160 bits -
+
+SHA 256 - 256 bit :
+
+SHA 384 - 384 bits :
+
+SHA 512 - 512 bits :
+
+
+git uses SHA1 - 160 bits = 40 hexadecimal numbers
+
+No of files git can contain is Math.pow(2,160) - large number , ned not worry about this
+chance of 2 files having same hash :  1/ (2.pow 160)* (1/2 pow 160) = 1/(2*320)
+
+2. git cat-file : to read file or object (?)
+
+
+git cat-file -p(contents of object) / -s(ize of object) / -t(ype of object) <hash>
+
+git cat-file -p 840041a54a2d7f4cb7df6670268815ccc1d0d793
+Hello. Git
+
+git cat-file -t 840041a54a2d7f4cb7df6670268815ccc1d0d793
+blob
+
+git cat-file -s 840041a54a2d7f4cb7df6670268815ccc1d0d793
+11
+
+
+Git object permissions :
+040000 directory
+100644 Regular non-executable file
+100664 Regular non-Executable group-writable file
+100755 Regular executable file
+120000 Symbolic link
+160000 Git link
+
+git mktree - new tree object 
+
+https://stackoverflow.com/questions/65339641/fatal-input-format-error-for-git-mktree-command/69104861#69104861
+od -bc ../temp-tree.txt (debugging)
+
+
+
+worling Directory, staging area , git repository
+staging area - also called as index takes care of moving files from work directory to git repositoty and vice verajase_sai_wfm_local_deployment
+
+working directory is your directory where you are making changes
+git repository is hidden .git folder
+staging area can be viewes using command git ls-files -s
+
+git read-tree <treehash> => moved tree and objects from git repo into staging area
+
+git ls-files
+file1.txt
+file2.txt
+
+git ls-files -s -(table form data)
+100644 840041a54a2d7f4cb7df6670268815ccc1d0d793 0       file1.txt
+100644 d23ea2b72f09d4a178d4ae8958c04e2edbd00be0 0       file2.txt
+
+ git checkout-index -a  - to move files from index (staging area) to working directory
+
+git status : status of your git repository
+
+trivia : max number of folders in git objects folder = 16*16 = 256 (folder has first 2 letters of hexadecimal hash)
+
+
+
+Commit :
+same structure as object =  objettype+length+delimiter+content
+content : Author name and email
+commit description
+parent - pointer to parent commit
+shah1 hash
+
+wrapper around tree object - contains pointer to tree object
+
+commit = read-tree + checkout-index a commands
+
+commit needs a author name and email :
+
+to set them use below commands :
+
+git config --global user.name <Name>
+
+git config --global user.email <Email>
+
+to list config props :
+
+git config --list
+
+
+username and email can be set globally or per project, normal case is to set globally
+
+match name and email with your github account settings
+
+
+git commit -m  to move files from directory to git repository
+
+
+check data in commit file :
+git cat-file -p 5607
+tree 9b851c9b113a21a2f0187f36744ecbff423395b4
+author SaiVaniPatil <patil.saivani@gmail.com> 1631114948 +0530
+committer SaiVaniPatil <patil.saivani@gmail.com> 1631114948 +0530
+
+Our very first commit in project
+
+------------------------------------------------
+
+
+
+
+Basic git commands :
+
+git status - current state of git repository
+git add  - Add files to staging area from working directory
+git commit - write chnages to git repo
+git log - history of changes(commits)
+git checkout - checkout commit or branch
+
+
+create new file in directory :
+
+touch file3.txt
+add contents
+echo "third file for git rep" > file3.txt
+git status - shows that file3.txt is untracked
+
+Tracking status of file in git repository :
+1. untracked - new file status is untracked (only available in working directory)
+git add will change untracked file to staged to track the file
+2. Modified  -  file is modified in working directory, changes to unmodified file will make a file modified
+git add will move modified files to staged 
+3. Staged  - files are in staged area but not in git repo
+git commit will change status from staged to unmodified
+4. Unmodified - files are in git repo or committed to git repo
+
+git add - requires parameter - to add all files to staging area use => git add .
+to add specific file use => git add file3.txt
+
+
+ git rm --cached file3.txt - removed file from staged area and file becomes untracked, this can be applied only if the file
+ is not committed
+
+
+
+git checkout - for specific version of project moves files from git repository to working directory
+
+
+
+
+Githubdesktop - download,github.com  - user desktop Interface
+
+Branch :
+
+Default branch is main/master (can be configured while installing git)
+Multiple branches can exist in same repository
+Pointers for all branches are in .git/refs/heads folder
+current branch tracks new commits
+branch pointer moves automatically after every commit
+change branch git checkout <branch>
+
+branch is just pointer to specific commit
+
+
+HEAD in Git :
+
+Head is reference to currently checked out branch or commit
+Head is locally significant
+Head pointer is located in .git/HEAD file
+Default pointer is ref:refs/heads/master
+checkout specific branch  : git checkout <branch name>
+checkout to specific commit :  git checkout <sha1>
+
+
+
+Branches commands in git :
+
+git branch - Lists all local Branches
+git branch <name> - Create new branch
+git checkout <branchname> - checkout specific branch 
+git branch -d <branchname> - Delete specific branch  , used only for merged branch
+git branch -D <branchname> - Delete specific branch  , used only for non merged branch
+git branch -m <old branch name> <new branch name> - rename specific branch 
+
+git  checkout -b <branch name> - creates a branch and checks out (combination of git branch and git checkout)
+
+
+
+
+merging a branch :
+
+git merge <branchname>
+
+3 way merge : (in times of conflict)
+
+git commit -a -m "changed file file5.txt" (automatically stages files alternative to git add . and git commit -m)
+
+
+
+GIT VS GITHUB :
+
+
+Github : repository hosting service
+
+
+ex : gitlab, github, bitbucket
+
+exchange updates between different collaborators through common point
+
+
+
+git push , fetch, pull commands :
+
+git push - pushes changes from .git to github (local repository to remote repository)
+git fetch - opposite of git push , moves changes from github to git(remote to local repository)
+git pull - gets changes from remote git repository to working directory 
+
+
+
+Origin :
+
+origin is binding between remote and local repository
+
+default remote repositoty is origin, created when remote repository is cloned to local
+
+
+git remote - origin
+
+
+git branch command only lists local branches by default
+
+git branch -a : lists remote branches
+
+tracking branch :
+
+branches are present in both local and remote.
+
+
+if present in local and not in remote, create branch in remote 
+if not present in local but present in remote, checkout remote branch
+
+git branch -vv  : lists tracking branches
+
+git branch -d branchname - can delete branch in local repository if it is 
+available in remote repository and unmerged to main
+
+
+git remote show origin - lists information of origin
+
+git remote prune origin - delete locally checked out remotely deleted  repositories
+
+
+
+git pull :
+
+git fetch + git merge fetch_head 
+
+only updates currently checked out branches 
+
+1. checkout local branch, ensure it is tracking branch (branch in both remote and local repositories)
+git branch -vv command to check above statement
+2. Enter git pull 
+3. git fetch is executed in background , fetches changes from remore repositories 
+4. after fetching, git updates fetch_head file having sha1 hashes of last commits in remote repos for 
+all tracking branches 
+5. git merges remote to current using git merge fetch_head (fast forward or 3 way merge) 
+
+
+
+
+git fetch : local git  downloads all git objects such as commits, blobs and trees that were created
+in tracking remote branches in the remote repositories and re created them in locla git repository
+
+
+move branch from local to remote repository :
+
+ git push -v
+fatal: The current branch feature-2 has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin feature-2 / git push -v -u origin feature-2
+
+
+
+
+update tracking status for deleted remote branches :
+
+git remote update origin --prune
+
+delete remote branches :
+git push origin -d <remote branch name>
+
+
+check remote and local references :
+
+
+git show-ref  => ls .git/refs/heads + .git/refs/remotes/origin
+
+
+
+pull requestson remore repository :
+
+https://docs.github.com/en/get-started/getting-started-with-git/setting-your-username-in-git
+
+
+
+change author details in previous commit :
+git commit --ammend --author="Sai Patil <saipatil.fa@gmail.com>"
+
+
+
+Add collaborator in new github repository :
+add from settings in git hub 
+
+
+configure protected branch : branch cannot be merged to main without approvals :
+settings -> branches -> branch protection rule
+
+Issues (tab) in github : to log, bugs enhancements etc , like a bug tracker
+
+Fork / Forking a repository :
+when you want to get another's repository where there is no write access and use or further work on it,
+use fork
+
+
+Git tags :
+
+
+git tag v1.0.0
+
+stored in .git/refs/tags 
+
+annotated tags : (can add message for tag, can find tag creation date)
+
+git tag -a v1.0.0 -m "New tag"
+
+stored in .git/refs/tags 
+
+stored in .git/objects
+
+
+static pointers to specific commit.
+we can checkout specific tag.
+
+used to add release versions for projects
+
+CI/CD (Continuous Integration / Continuous development)
+
+

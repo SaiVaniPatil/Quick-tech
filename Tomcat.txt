@@ -1,0 +1,126 @@
+1. Web app server that can handle request and response models   
+2. Download binary versions from https://tomcat.apache.org/ and execute it
+3. Update catalina home in environment variables pointing to bin of tomcat application 
+ex : CATALINA_HOME = C:\Softwares\apache-tomcat-9.0.52-windows-x64\apache-tomcat-9.0.52
+4. To run tomcat execute start bat file and to stop tomct, execute stop bat file
+
+
+Web application :
+
+To design a simple we application: (Refer FirstServletApp)
+
+1. In folder C:\Softwares\apache-tomcat-9.0.52-windows-x64\apache-tomcat-9.0.52\webapps, create directory (root directory) of your application
+2. Create WEB_INF folder inside this directory 
+3. Create a classes directory that will contain all your classes needed for web application
+4. Create a deployment descriptor web.xml :
+
+Contents in basic web.xml :  servlet and servlet mapping to execute a simple servlet class : servlet points to class file and servlet mapping 
+is mapping between servlet name and url pattern
+
+<web-app>
+<servlet>
+    <servlet-name>yourServlet</servlet-name>
+    <servlet-class>HelloWorld</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>yourServlet</servlet-name>
+    <url-pattern>/firstApp</url-pattern>  <!-- This is the URL of the servlet. -->
+</servlet-mapping>
+</web-app>
+
+save the files , start tomcat and enter localhost:8080/FirstServletApp/firstApp
+8080 is default tomcat port, if the port is already used , it can always be changed in 
+server.xml under tomcat_location/conf/server.xml
+
+<Connector port="8081" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+
+
+Web application using annotations: (Refer SecondServletApp)
+
+
+1. In folder C:\Softwares\apache-tomcat-9.0.52-windows-x64\apache-tomcat-9.0.52\webapps, create directory (root directory) of your application
+2. Create WEB_INF folder inside this directory 
+3. Create a classes directory that will contain all your servlet classes needed for web application
+4. Servlet class should contain annotation @WebServlet("/servletName") => in our case it is => @WebServlet("/AddTwoNumbers"), this is equivalent 
+to defining servlet name and mapping in web.xml 
+ 4. Create a deployment descriptor web.xml :
+ontents in basic web.xml :  servlet and servlet mapping to execute a simple servlet class : servlet points to class file and servlet mapping 
+is mapping between servlet name and url pattern
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+    xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">
+
+</web-app>
+
+save the files , start tomcat and enter localhost:8080/SecondServletApp/AddTwoNumbers
+
+Web application using html: (Refer ThirdServletApp, Hereafter we use annotations to invoke servlets):
+1.Steps are same as described in web application using annotation, except that we have html page now
+3. Create a index.html page in root directory which is C:\Sai_Softwares\apache-tomcat-9.0.52-windows-x64\apache-tomcat-9.0.52\webapps\ThirdServletApp\
+4. When tomcat url is invoked, it look for the index.html which is the first or default page of your application.
+index.html name can be changed in 2 ways :
+1.Can be changed in web.xml in tomcat application  (C:\Softwares\apache-tomcat-9.0.52-windows-x64\apache-tomcat-9.0.52\conf)
+
+<welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.htm</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+2. Can be added in web.xml in application, which will override the main web.xml settings
+
+References : https://stackoverflow.com/tags/servlets/info
+
+Filters in web application : (Refer FourthservletApp)
+
+Initial checks to be performed before forwarding request to servlet
+ex : accessing profile page, should ask for login creds if user is not logged in
+Create a class that implements Filter Interface and annotate it as
+@WebFilter(filterName ="FilterExample",urlPatterns={"/SetCookies"})
+filterName is the class name and urlpatterns is the urls that direct to this page;
+To redirect from all pages set urlpatterns="/*" or many other 
+
+Place the filter class in the WEB-INF/classes directory where other servlet classes are available
+
+syntax for web.xml : (when not using annotations)
+<filter>
+    <filter-name>LogFilter</filter-name>
+    <filer-class>LogFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>LogFilter</filter-name>
+    <url-pattern>/*</url-pattern>  
+</filter-mapping>
+
+3. using war file :
+
+Step to create a war file :
+
+https://www.javatpoint.com/war-file
+
+to run command cd to the root folder location before WEB-INF  and execute below command :
+
+"C:\Program Files\Java\jdk1.8.0_181\bin\jar" -cvf FifthServletApp.war *
+
+location of jar.exe -c(create)v(verbose_output)f(filename) projectname.war *
+
+to unarchive war file :
+
+jar -xvf projectname.war  
+
+
+Place this generated war file in the webapps folder and start tomcat application
+
+
+
+Elements in web.xml :
+
+https://docs.oracle.com/cd/E17904_01/web.1111/e13712/web_xml.htm#WBAPP502
+
+
+
